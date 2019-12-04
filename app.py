@@ -286,36 +286,12 @@ def forward_form(form_token):
           "value": "test"
         },
         {
-          "property": "lastname",
-          "value": "testerson"
-        },
-        {
-          "property": "website",
-          "value": "http://hubspot.com"
-        },
-        {
-          "property": "company",
-          "value": "HubSpot"
-        },
-        {
           "property": "phone",
           "value": "555-122-2323"
         },
         {
-          "property": "address",
-          "value": "25 First Street"
-        },
-        {
-          "property": "city",
-          "value": "Cambridge"
-        },
-        {
-          "property": "state",
-          "value": "MA"
-        },
-        {
-          "property": "zip",
-          "value": "02139"
+          "property": "message",
+          "value": substitute_params(form.body, request.form)
         }
       ]
     })
