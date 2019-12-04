@@ -258,6 +258,8 @@ def forward_form(form_token):
     submitter_email = request.form.get('email')
 
     if submitter_email:
+        # 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
+        # endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
         endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
         headers = {}
         headers["Content-Type"]="application/json"
