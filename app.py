@@ -271,47 +271,37 @@ def forward_form(form_token):
 
 
 
-
-    endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
-    headers = {}
-    headers["Content-Type"]="application/json"
-    data = json.dumps({
-      "properties": [
-        {
-          "property": "email",
-          "value": submitter_email
-        },
-        {
-          "property": "firstname",
-          "value": "test"
-        },
-        {
-          "property": "phone",
-          "value": "555-122-2323"
-        },
-        {
-          "property": "message",
-          "value": substitute_params(form.body, request.form)
-        }
-      ]
-    })
-
-
-    r = requests.post( url = endpoint, data = data, headers = headers )
-
-    print(r.text)
+    # 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
+    # endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
+    if submitter_email
+        endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
+        headers = {}
+        headers["Content-Type"]="application/json"
+        data = json.dumps({
+          "properties": [
+            {
+              "property": "email",
+              "value": submitter_email
+            },
+            {
+              "property": "firstname",
+              "value": "test"
+            },
+            {
+              "property": "phone",
+              "value": "555-122-2323"
+            },
+            {
+              "property": "message",
+              "value": substitute_params(form.body, request.form)
+            }
+          ]
+        })
 
 
+        r = requests.post( url = endpoint, data = data, headers = headers )
 
-
-
-
-
-
-
-
-
-
+        print(r.text)
 
     send_mail(
         to_address=user.email,
