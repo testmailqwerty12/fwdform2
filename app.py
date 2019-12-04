@@ -279,7 +279,7 @@ def forward_form(form_token):
       "properties": [
         {
           "property": "email",
-          "value": "testingapis@hubspot.com"
+          "value": submitter_email
         },
         {
           "property": "firstname",
