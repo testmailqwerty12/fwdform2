@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import requests
+import json
 import secrets
 import sys
 from uuid import uuid4
@@ -34,6 +35,7 @@ mailgun_send_url = 'https://api.mailgun.net/v3/%s/messages' % mailgun_domain
 registration_enabled = os.environ.get('REGISTRATION_ENABLED') in ['yes', 'true']
 registration_password = os.environ['REGISTRATION_PASSWORD'] if registration_enabled else None
 default_sender = os.environ.get('DEFAULT_SENDER') or ('fwdform@%s' % mailgun_domain)
+hapikey = os.environ.get('HUBSPOT_API_KEY')
 
 ESCAPE_SEQUENCE_RE = re.compile(r"\\|%")
 UNESCAPE_SEQUENCE_RE = re.compile(r"\\(\\|%)")
@@ -255,6 +257,86 @@ def forward_form(form_token):
 
     submitter_email = request.form.get('email')
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
+    headers = {}
+    headers["Content-Type"]="application/json"
+    data = json.dumps({
+      "properties": [
+        {
+          "property": "email",
+          "value": "testingapis@hubspot.com"
+        },
+        {
+          "property": "firstname",
+          "value": "test"
+        },
+        {
+          "property": "lastname",
+          "value": "testerson"
+        },
+        {
+          "property": "website",
+          "value": "http://hubspot.com"
+        },
+        {
+          "property": "company",
+          "value": "HubSpot"
+        },
+        {
+          "property": "phone",
+          "value": "555-122-2323"
+        },
+        {
+          "property": "address",
+          "value": "25 First Street"
+        },
+        {
+          "property": "city",
+          "value": "Cambridge"
+        },
+        {
+          "property": "state",
+          "value": "MA"
+        },
+        {
+          "property": "zip",
+          "value": "02139"
+        }
+      ]
+    })
+
+
+    r = requests.post( url = endpoint, data = data, headers = headers )
+
+    print(r.text)
+
+
+
+
+
+
+
+
+
+
+
+
+
     send_mail(
         to_address=user.email,
         from_address=default_sender,
@@ -272,6 +354,8 @@ def forward_form(form_token):
             html_body=substitute_params(form.response_html_body, request.form),
             reply_to_address=form.response_reply_to
         )
+
+
 
     if 'redirect' in request.form:
         return redirect(request.form['redirect'])
