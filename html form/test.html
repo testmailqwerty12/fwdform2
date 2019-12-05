@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+<form action="<HEROKU URL>/form/<FORM ID>" method="POST" id="idForm">
+    <div>
+        Name: <input name="name" type="text">
+    </div>
+    <div>
+        E-mail: <input name="email" type="text">
+    </div>
+    <div>
+        pH: <input name="phone" type="text">
+    </div>
+    <div>
+        subject: <input name="subject" type="subject">
+    </div>
+    <div>
+        Message: <textarea name="body" rows="6" cols="120"></textarea>
+    </div>
+    <div>
+        <input type="text" name="_gotcha" style="display:none;" />
+    </div>
+    <div>
+        <!-- <input name="redirect" type="hidden" value="https://<YOUR_WEBSITE>/<YOUR_POST_SUBMISSION_PAGE>"> -->
+        <input type="submit" value="Submit">
+    </div>
+</form>
+<script type="text/javascript">
+$(function(){
+    $("#idForm").submit(function(e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var url = form.attr('action');
+
+        $.ajax({
+               url: form.attr("action"),
+                method: "POST",
+                data: form.serialize(),
+                dataType: "json",
+               success: function(data)
+               {
+                   alert("Form submitted");
+                   $('#idForm')[0].reset();
+               }
+             });
+    });
+})
+</script>
+</body>
+</html>
