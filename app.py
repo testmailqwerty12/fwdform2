@@ -320,21 +320,15 @@ def forward_form(form_token):
 
             print(r.text)
 
-
-
-
-
-
-
-        if submitter_email and form.response_body:
-            send_mail(
-                to_address=submitter_email,
-                from_address=form.response_from or default_sender,
-                subject=substitute_params(form.response_subject, request.form) or 'Your confirmation',
-                body=substitute_params(form.response_body, request.form),
-                html_body=substitute_params(form.response_html_body, request.form),
-                reply_to_address=form.response_reply_to
-            )
+            if submitter_email and form.response_body:
+                send_mail(
+                    to_address=submitter_email,
+                    from_address=form.response_from or default_sender,
+                    subject=substitute_params(form.response_subject, request.form) or 'Your confirmation',
+                    body=substitute_params(form.response_body, request.form),
+                    html_body=substitute_params(form.response_html_body, request.form),
+                    reply_to_address=form.response_reply_to
+                )
 
 
 
