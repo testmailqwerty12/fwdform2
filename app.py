@@ -305,10 +305,6 @@ def forward_form(form_token):
                   "property": "phone",
                   "value": submitter_phone
                 },
-                                {
-                  "property": "phone",
-                  "value": submitter_phone
-                },
                 {
                   "property": "message",
                   "value": submitter_body
