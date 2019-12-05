@@ -258,64 +258,65 @@ def forward_form(form_token):
     submitter_email = request.form.get('email')
     honeypot = request.form.get('_gotcha')
 
-    if not honeypot:
-        if submitter_email:
-            send_mail(
-                to_address=user.email,
-                from_address=default_sender,
-                subject=substitute_params(form.subject, request.form),
-                body=substitute_params(form.body, request.form),
-                reply_to_address=submitter_email,
-            )
+    if not honeypot and submitter_email:
+        send_mail(
+            to_address=user.email,
+            from_address=default_sender,
+            subject=substitute_params(form.subject, request.form),
+            body=substitute_params(form.body, request.form),
+            reply_to_address=submitter_email,
+        )
 
-            submitter_name = request.form.get('name')
-            submitter_name_list = submitter_name.split()
-            submitter_first_name = submitter_name_list[0]
-            submitter_name_list.pop(0)
-            submitter_last_name = " ".join(submitter_name_list)
+        submitter_name = request.form.get('name')
+        submitter_name_list = submitter_name.split()
+        submitter_first_name = submitter_name_list[0]
+        submitter_name_list.pop(0)
+        submitter_last_name = " ".join(submitter_name_list)
 
-            submitter_phone = request.form.get('phone')
-            submitter_subject = request.form.get('subject')
-            submitter_body = request.form.get('body')
+        submitter_phone = request.form.get('phone')
+        submitter_subject = request.form.get('subject')
+        submitter_body = request.form.get('body')
 
-            # 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
-            # endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
-            endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
-            headers = {}
-            headers["Content-Type"]="application/json"
-            data = json.dumps({
-              "properties": [
-                {
-                  "property": "email",
-                  "value": submitter_email
-                },
-                {
-                  "property": "firstname",
-                  "value": submitter_first_name
-                },
-                {
-                  "property": "lastname",
-                  "value": submitter_first_name
-                },
-                {
-                  "property": "phone",
-                  "value": submitter_phone
-                },
-                {
-                  "property": "subject",
-                  "value": submitter_subject
-                },
-                {
-                  "property": "message",
-                  "value": submitter_body
-                }
-              ]
-            })
+        # 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
+        # endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
+        endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
+        headers = {}
+        headers["Content-Type"]="application/json"
+        data = json.dumps({
+          "properties": [
+            {
+              "property": "email",
+              "value": submitter_email
+            },
+            {
+              "property": "firstname",
+              "value": submitter_first_name
+            },
+            {
+              "property": "lastname",
+              "value": submitter_first_name
+            },
+            {
+              "property": "phone",
+              "value": submitter_phone
+            },
+            {
+              "property": "subject",
+              "value": submitter_subject
+            },
+            {
+              "property": "message",
+              "value": submitter_body
+            }
+          ]
+        })
 
 
-            r = requests.post( url = endpoint, data = data, headers = headers )
+        r = requests.post( url = endpoint, data = data, headers = headers )
 
-            print(r.text)
+        print('================== HUBSPOT RESPONSE START ===================')
+        print(r.text)
+        print('================== HUBSPOT RESPONSE END =====================')
 
         # if submitter_email and form.response_body:
         #     send_mail(
