@@ -278,8 +278,7 @@ def forward_form(form_token):
             submitter_last_name = " ".join(submitter_name_list)
 
             submitter_phone = request.form.get('phone')
-
-            submitter_phone = request.form.get('subject')
+            submitter_subject = request.form.get('subject')
             submitter_body = request.form.get('body')
 
             # 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
@@ -304,6 +303,10 @@ def forward_form(form_token):
                 {
                   "property": "phone",
                   "value": submitter_phone
+                },
+                {
+                  "property": "subject",
+                  "value": submitter_subject
                 },
                 {
                   "property": "message",
