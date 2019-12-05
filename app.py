@@ -259,17 +259,14 @@ def forward_form(form_token):
     honeypot = request.form.get('_gotcha')
 
     if not honeypot:
-        send_mail(
-            to_address=user.email,
-            from_address=default_sender,
-            subject=substitute_params(form.subject, request.form),
-            body=substitute_params(form.body, request.form),
-            reply_to_address=submitter_email,
-        )
-
-
-
         if submitter_email:
+            send_mail(
+                to_address=user.email,
+                from_address=default_sender,
+                subject=substitute_params(form.subject, request.form),
+                body=substitute_params(form.body, request.form),
+                reply_to_address=submitter_email,
+            )
 
             submitter_name = request.form.get('name')
             submitter_name_list = submitter_name.split()
@@ -320,15 +317,15 @@ def forward_form(form_token):
 
             print(r.text)
 
-            if submitter_email and form.response_body:
-                send_mail(
-                    to_address=submitter_email,
-                    from_address=form.response_from or default_sender,
-                    subject=substitute_params(form.response_subject, request.form) or 'Your confirmation',
-                    body=substitute_params(form.response_body, request.form),
-                    html_body=substitute_params(form.response_html_body, request.form),
-                    reply_to_address=form.response_reply_to
-                )
+        # if submitter_email and form.response_body:
+        #     send_mail(
+        #         to_address=submitter_email,
+        #         from_address=form.response_from or default_sender,
+        #         subject=substitute_params(form.response_subject, request.form) or 'Your confirmation',
+        #         body=substitute_params(form.response_body, request.form),
+        #         html_body=substitute_params(form.response_html_body, request.form),
+        #         reply_to_address=form.response_reply_to
+        #     )
 
 
 
