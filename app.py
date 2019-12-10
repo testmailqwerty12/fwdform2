@@ -19,9 +19,9 @@ except:
     pass
 
 app = Flask(__name__)
-# cors_allowed_origin = os.environ['CORS_ALLOWED_ORIGINS']
-# cors = CORS(app, origins=('*' if not cors_allowed_origin else cors_allowed_origin.split(',')))
-cors = CORS(app)
+cors_allowed_origin = os.environ['CORS_ALLOWED_ORIGINS']
+cors = CORS(app, origins=('*' if not cors_allowed_origin else cors_allowed_origin.split(',')))
+# cors = CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
