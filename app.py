@@ -359,7 +359,7 @@ def forward_form(form_token):
         print('================== SLACK RESPONSE END =====================')
 
         response_message = 'form-submitted'
-    else
+    else:
         response_message = 'form-not-submitted'
 
         # if submitter_email and form.response_body:
