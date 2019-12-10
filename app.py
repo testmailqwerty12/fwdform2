@@ -277,6 +277,8 @@ def forward_form(form_token):
     r = requests.post( url = recaptcha_endpoint, data = data, headers = headers )
 
     print('================== RECAPTCHA RESPONSE START ===================')
+    print(recaptcha_secret_key)
+    print(g_recaptcha_response)
     print(r.text)
     # print(r.text["success"])
     # print(r.text["success"] == "true")
