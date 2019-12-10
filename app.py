@@ -44,6 +44,8 @@ slack_auth_key = os.environ.get('SLACK_AUTH_KEY')
 slack_channed_id = os.environ.get('SLACK_CHANNEL_ID')
 slack_bot_name = os.environ.get('SLACK_BOT_NAME')
 
+recaptcha_secret_key = os.environ.get('RECAPTCHA_SECRET_KEY')
+
 ESCAPE_SEQUENCE_RE = re.compile(r"\\|%")
 UNESCAPE_SEQUENCE_RE = re.compile(r"\\(\\|%)")
 PARAM_RE = re.compile(r"(?<!\\)%((?:[^%]|\\%)*?(?:[^%\\]|\\%))%")
@@ -265,7 +267,23 @@ def forward_form(form_token):
     submitter_email = request.form.get('email')
     honeypot = request.form.get('_gotcha')
 
-    if not honeypot and submitter_email:
+    recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify'
+    g_recaptcha_response = request.form.get('g-recaptcha-response')
+    headers = {}
+    headers["Content-Type"]="application/json"
+    data = json.dumps({
+          "secret": recaptcha_secret_key,
+          "response": g_recaptcha_response})
+    r = requests.post( url = recaptcha_endpoint, data = data, headers = headers )
+
+    print('================== RECAPTCHA RESPONSE START ===================')
+    print(r.text)
+    print(r.text["success"])
+    print(r.text["success"] == "true")
+    print('================== RECAPTCHA RESPONSE END =====================')
+
+
+    if r.text["success"] == "true" and not honeypot and submitter_email:
         send_mail(
             to_address=user.email,
             from_address=default_sender,
@@ -340,6 +358,10 @@ def forward_form(form_token):
         print(r.text)
         print('================== SLACK RESPONSE END =====================')
 
+        response_message = 'form-submitted'
+    else
+        response_message = 'form-not-submitted'
+
         # if submitter_email and form.response_body:
         #     send_mail(
         #         to_address=submitter_email,
@@ -353,4 +375,4 @@ def forward_form(form_token):
     if 'redirect' in request.form:
         return redirect(request.form['redirect'])
 
-    return jsonify() if request_wants_json() else 'Form submitted'
+    return jsonify() if request_wants_json() else response_message
