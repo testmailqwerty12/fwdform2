@@ -270,7 +270,7 @@ def forward_form(form_token):
     recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify'
     g_recaptcha_response = request.form.get('g-recaptcha-response')
     headers = {}
-    headers["Content-Type"]="application/json"
+    headers["Content-Type"]="application/x-www-form-urlencoded"
     data = json.dumps({
           "secret": recaptcha_secret_key,
           "response": g_recaptcha_response})
@@ -278,8 +278,8 @@ def forward_form(form_token):
 
     print('================== RECAPTCHA RESPONSE START ===================')
     print(r.text)
-    print(r.text["success"])
-    print(r.text["success"] == "true")
+    # print(r.text["success"])
+    # print(r.text["success"] == "true")
     print('================== RECAPTCHA RESPONSE END =====================')
 
 
