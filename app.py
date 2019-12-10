@@ -272,6 +272,7 @@ def forward_form(form_token):
     headers = {}
     headers["Content-Type"]="application/x-www-form-urlencoded"
     data = json.dumps({
+          "Content-Type": "application/x-www-form-urlencoded",
           "secret": recaptcha_secret_key,
           "response": g_recaptcha_response})
     r = requests.post( url = recaptcha_endpoint, data = data, headers = headers )
@@ -280,12 +281,12 @@ def forward_form(form_token):
     print(recaptcha_secret_key)
     print(g_recaptcha_response)
     print(r.text)
-    # print(r.text["success"])
-    # print(r.text["success"] == "true")
+    print(r.text.json()["success"])
+    print(r.text.json()["success"] == "true")
     print('================== RECAPTCHA RESPONSE END =====================')
 
 
-    if r.text["success"] == "true" and not honeypot and submitter_email:
+    if r.text.json()["success"] == "true" and not honeypot and submitter_email:
         send_mail(
             to_address=user.email,
             from_address=default_sender,
