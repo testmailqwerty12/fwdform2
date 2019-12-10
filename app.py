@@ -272,7 +272,7 @@ def forward_form(form_token):
     headers = {}
     headers["Content-Type"]="application/x-www-form-urlencoded"
     data = json.dumps({
-          "Content-Type": "application/x-www-form-urlencoded",
+          '_':'_',
           "secret": recaptcha_secret_key,
           "response": g_recaptcha_response})
     r = requests.post( url = recaptcha_endpoint, data = data, headers = headers )
