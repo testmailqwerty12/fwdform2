@@ -19,6 +19,8 @@ except:
     pass
 
 app = Flask(__name__)
+cors_allowed_origin = os.environ['CORS_ALLOWED_ORIGINS']
+# cors = CORS(app, origins=('*' if not cors_allowed_origin else cors_allowed_origin.split(',')))
 cors = CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -35,7 +37,12 @@ mailgun_send_url = 'https://api.mailgun.net/v3/%s/messages' % mailgun_domain
 registration_enabled = os.environ.get('REGISTRATION_ENABLED') in ['yes', 'true']
 registration_password = os.environ['REGISTRATION_PASSWORD'] if registration_enabled else None
 default_sender = os.environ.get('DEFAULT_SENDER') or ('fwdform@%s' % mailgun_domain)
+
 hapikey = os.environ.get('HUBSPOT_API_KEY')
+
+slack_auth_key = os.environ.get('SLACK_AUTH_KEY')
+slack_channed_id = os.environ.get('SLACK_CHANNEL_ID')
+slack_bot_name = os.environ.get('SLACK_BOT_NAME')
 
 ESCAPE_SEQUENCE_RE = re.compile(r"\\|%")
 UNESCAPE_SEQUENCE_RE = re.compile(r"\\(\\|%)")
@@ -278,8 +285,8 @@ def forward_form(form_token):
         submitter_body = request.form.get('body')
 
         # 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
-        # endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
-        endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
+        # hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
+        hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
         headers = {}
         headers["Content-Type"]="application/json"
         data = json.dumps({
@@ -312,11 +319,26 @@ def forward_form(form_token):
         })
 
 
-        r = requests.post( url = endpoint, data = data, headers = headers )
+        r = requests.post( url = hubspot_endpoint, data = data, headers = headers )
 
         print('================== HUBSPOT RESPONSE START ===================')
         print(r.text)
         print('================== HUBSPOT RESPONSE END =====================')
+
+        slack_endpoint = 'https://slack.com/api/chat.postMessage'
+        headers = {}
+        headers["Content-Type"]="application/json"
+        headers["Authorization"]=slack_auth_key
+        data = json.dumps({
+          "channel": slack_channed_id,
+          "text": "*" + submitter_name + "* has submitted the contact form.\n\n*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n___________________________________________\n",
+          "username": slack_bot_name})
+
+        r = requests.post( url = slack_endpoint, data = data, headers = headers )
+
+        print('================== SLACK RESPONSE START ===================')
+        print(r.text)
+        print('================== SLACK RESPONSE END =====================')
 
         # if submitter_email and form.response_body:
         #     send_mail(
@@ -327,8 +349,6 @@ def forward_form(form_token):
         #         html_body=substitute_params(form.response_html_body, request.form),
         #         reply_to_address=form.response_reply_to
         #     )
-
-
 
     if 'redirect' in request.form:
         return redirect(request.form['redirect'])
