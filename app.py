@@ -281,12 +281,12 @@ def forward_form(form_token):
     print(recaptcha_secret_key)
     print(g_recaptcha_response)
     print(r.text)
-    print(r.text.json()["success"])
-    print(r.text.json()["success"] == "true")
+    print(r.json()["success"])
+    print(r.json()["success"] == "true")
     print('================== RECAPTCHA RESPONSE END =====================')
 
 
-    if r.text.json()["success"] == "true" and not honeypot and submitter_email:
+    if r.json()["success"] == "true" and not honeypot and submitter_email:
         send_mail(
             to_address=user.email,
             from_address=default_sender,
