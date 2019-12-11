@@ -267,8 +267,8 @@ def forward_form(form_token):
     submitter_email = request.form.get('email')
     honeypot = request.form.get('_gotcha')
 
-    recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify?secret=' + recaptcha_secret_key + '&response=' + g_recaptcha_response
     g_recaptcha_response = request.form.get('g-recaptcha-response')
+    recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify?secret=' + recaptcha_secret_key + '&response=' + g_recaptcha_response
     headers = {}
     headers["Content-Type"]="application/x-www-form-urlencoded"
     headers["Content-Length"]=548
