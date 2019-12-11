@@ -267,16 +267,17 @@ def forward_form(form_token):
     submitter_email = request.form.get('email')
     honeypot = request.form.get('_gotcha')
 
-    recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify'
+    recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify?secret=' + recaptcha_secret_key + '&response=' + g_recaptcha_response
     g_recaptcha_response = request.form.get('g-recaptcha-response')
     headers = {}
     headers["Content-Type"]="application/x-www-form-urlencoded"
     headers["Content-Length"]=548
     data = json.dumps({
-          '_':'_',
-          "secret": recaptcha_secret_key,
-          "response": g_recaptcha_response,
-          "remoteip": "00.00.000.000"})
+          # '_':'_',
+          # "secret": recaptcha_secret_key,
+          # "response": g_recaptcha_response,
+          # "remoteip": "00.00.000.000"
+          })
     r = requests.post( url = recaptcha_endpoint, data = data, headers = headers )
 
     print('================== RECAPTCHA RESPONSE START ===================')
@@ -284,11 +285,11 @@ def forward_form(form_token):
     print(g_recaptcha_response)
     print(r.text)
     print(r.json()["success"])
-    print(r.json()["success"] == "true")
+    print(r.json()["success"] == True)
     print('================== RECAPTCHA RESPONSE END =====================')
 
 
-    if r.json()["success"] == "true" and not honeypot and submitter_email:
+    if r.json()["success"] == True and not honeypot and submitter_email:
         send_mail(
             to_address=user.email,
             from_address=default_sender,
