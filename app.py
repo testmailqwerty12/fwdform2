@@ -272,20 +272,11 @@ def forward_form(form_token):
     headers = {}
     headers["Content-Type"]="application/x-www-form-urlencoded"
     headers["Content-Length"]=548
-    data = json.dumps({
-          # '_':'_',
-          # "secret": recaptcha_secret_key,
-          # "response": g_recaptcha_response,
-          # "remoteip": "00.00.000.000"
-          })
+    data = json.dumps({})
     r = requests.post( url = recaptcha_endpoint, data = data, headers = headers )
 
     print('================== RECAPTCHA RESPONSE START ===================')
-    print(recaptcha_secret_key)
     print(g_recaptcha_response)
-    print(r.text)
-    print(r.json()["success"])
-    print(r.json()["success"] == True)
     print('================== RECAPTCHA RESPONSE END =====================')
 
 
