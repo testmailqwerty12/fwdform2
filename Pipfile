@@ -11,6 +11,7 @@ gunicorn = "~=19.7.1"
 psycopg2 = "~=2.7.3"
 requests = "~=2.2.1"
 SQLAlchemy = "~=1.2.2"
+rollbar = "~=0.14.7"
 
 [dev-packages]
 python-dotenv = "~=0.7.1"
