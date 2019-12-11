@@ -258,11 +258,11 @@ def deregister_form(form_token):
 def forward_form(form_token):
     form = Form.query.filter_by(public_token=form_token).first()
     if not form:
-        return ('Form not found', 404)
+        return ('form-not-found', 404)
 
     user = User.query.filter_by(id=form.user_id).first()
     if not user:
-        return ('User not found', 404)
+        return ('user-not-found', 404)
 
     submitter_email = request.form.get('email')
     honeypot = request.form.get('_gotcha')
@@ -279,6 +279,15 @@ def forward_form(form_token):
     print(g_recaptcha_response)
     print('================== RECAPTCHA RESPONSE END =====================')
 
+
+    if r.json()["success"] == False:
+        return ('captcha-invalid', 404)
+
+    if honeypot:
+        return ('error', 404)
+
+    if not submitter_email:
+        return ('email-blank', 404)
 
     if r.json()["success"] == True and not honeypot and submitter_email:
         send_mail(
