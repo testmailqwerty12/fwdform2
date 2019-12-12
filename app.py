@@ -281,19 +281,21 @@ def forward_form(form_token):
     honeypot = request.form.get('_gotcha')
 
     g_recaptcha_response = request.form.get('g-recaptcha-response')
-    recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify?secret=' + recaptcha_secret_key + '&response=' + g_recaptcha_response
-    headers = {}
-    headers["Content-Type"]="application/x-www-form-urlencoded"
-    headers["Content-Length"]=548
-    data = json.dumps({})
-    r = requests.post( url = recaptcha_endpoint, data = data, headers = headers )
 
-    print('================== RECAPTCHA RESPONSE START ===================')
-    print(g_recaptcha_response)
-    print('================== RECAPTCHA RESPONSE END =====================')
+    if g_recaptcha_response:
+        recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify?secret=' + recaptcha_secret_key + '&response=' + g_recaptcha_response
+        headers = {}
+        headers["Content-Type"]="application/x-www-form-urlencoded"
+        headers["Content-Length"]=548
+        data = json.dumps({})
+        r = requests.post( url = recaptcha_endpoint, data = data, headers = headers )
+
+        print('================== RECAPTCHA RESPONSE START ===================')
+        print(g_recaptcha_response)
+        print('================== RECAPTCHA RESPONSE END =====================')
 
 
-    if r.json()["success"] == False:
+    if not g_recaptcha_response or r.json()["success"] == False:
         return ('captcha-invalid', 404)
 
     if honeypot:
