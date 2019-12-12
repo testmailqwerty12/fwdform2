@@ -326,7 +326,8 @@ def forward_form(form_token):
             data = json.dumps({
               "channel": slack_contact_channel_id,
               "text": "*" + submitter_name + "* has submitted the contact form.\n\n*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n___________________________________________\n",
-              "username": slack_bot_name})
+              "username": slack_bot_name,
+              "icon_url": "https://a.slack-edge.com/80588/img/slack_api_logo_vogue.png"})
 
             r = requests.post( url = slack_endpoint, data = data, headers = headers )
 
@@ -413,7 +414,8 @@ def forward_form(form_token):
             data = json.dumps({
               "channel": slack_newsletter_channel_id,
               "text": "*" + submitter_email+ "* has subscribed for the newsletter.",
-              "username": slack_bot_name})
+              "username": slack_bot_name,
+              "icon_url": "https://a.slack-edge.com/80588/img/slack_api_logo_vogue.png"})
 
             r = requests.post( url = slack_endpoint, data = data, headers = headers )
 
