@@ -265,10 +265,10 @@ def deregister_form(form_token):
 
 @app.route('/form/<form_token>', methods=['POST'])
 def forward_form(form_token):
-    # try:
-    #     b = a + 1
-    # except:
-    #     rollbar.report_exc_info()
+    try:
+        b = a + 1
+    except:
+        rollbar.report_exc_info()
     form = Form.query.filter_by(public_token=form_token).first()
     if not form:
         return ('form-not-found', 404)
@@ -305,14 +305,8 @@ def forward_form(form_token):
         return ('email-blank', 404)
 
     if r.json()["success"] == True and not honeypot and submitter_email:
+
         if form_token == contact_form_id:
-            send_mail(
-                to_address=user.email,
-                from_address=default_sender,
-                subject=substitute_params(form.subject, request.form),
-                body=substitute_params(form.body, request.form),
-                reply_to_address=submitter_email,
-            )
 
             submitter_name = request.form.get('name')
             submitter_name_list = submitter_name.split()
@@ -323,6 +317,23 @@ def forward_form(form_token):
             submitter_phone = request.form.get('phone')
             submitter_subject = request.form.get('subject')
             submitter_body = request.form.get('body')
+
+
+            slack_endpoint = 'https://slack.com/api/chat.postMessage'
+            headers = {}
+            headers["Content-Type"]="application/json"
+            headers["Authorization"]=slack_auth_key
+            data = json.dumps({
+              "channel": slack_contact_channel_id,
+              "text": "*" + submitter_name + "* has submitted the contact form.\n\n*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n___________________________________________\n",
+              "username": slack_bot_name})
+
+            r = requests.post( url = slack_endpoint, data = data, headers = headers )
+
+            print('================== SLACK RESPONSE START ===================')
+            print(r.text)
+            print('================== SLACK RESPONSE END =====================')
+
 
             # 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
             # hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
@@ -341,7 +352,7 @@ def forward_form(form_token):
                 },
                 {
                   "property": "lastname",
-                  "value": submitter_first_name
+                  "value": submitter_last_name
                 },
                 {
                   "property": "phone",
@@ -365,20 +376,13 @@ def forward_form(form_token):
             print(r.text)
             print('================== HUBSPOT RESPONSE END =====================')
 
-            slack_endpoint = 'https://slack.com/api/chat.postMessage'
-            headers = {}
-            headers["Content-Type"]="application/json"
-            headers["Authorization"]=slack_auth_key
-            data = json.dumps({
-              "channel": slack_contact_channel_id,
-              "text": "*" + submitter_name + "* has submitted the contact form.\n\n*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n___________________________________________\n",
-              "username": slack_bot_name})
-
-            r = requests.post( url = slack_endpoint, data = data, headers = headers )
-
-            print('================== SLACK RESPONSE START ===================')
-            print(r.text)
-            print('================== SLACK RESPONSE END =====================')
+            send_mail(
+                to_address=user.email,
+                from_address=default_sender,
+                subject=substitute_params(form.subject, request.form),
+                body=substitute_params(form.body, request.form),
+                reply_to_address=submitter_email,
+            )
         elif form_token == newsletter_form_id:
             hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
             headers = {}
