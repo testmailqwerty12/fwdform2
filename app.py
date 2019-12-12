@@ -50,6 +50,7 @@ slack_auth_key = os.environ.get('SLACK_AUTH_KEY')
 slack_contact_channel_id = os.environ.get('SLACK_CONTACT_CHANNEL_ID')
 slack_newsletter_channel_id = os.environ.get('SLACK_NEWSLETTER_CHANNEL_ID')
 slack_bot_name = os.environ.get('SLACK_BOT_NAME')
+slack_bot_icon_url = os.environ.get('SLACK_BOT_ICON_URL')
 
 recaptcha_secret_key = os.environ.get('RECAPTCHA_SECRET_KEY')
 
@@ -327,7 +328,7 @@ def forward_form(form_token):
               "channel": slack_contact_channel_id,
               "text": "*" + submitter_name + "* has submitted the contact form.\n\n*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n___________________________________________\n",
               "username": slack_bot_name,
-              "icon_url": "https://a.slack-edge.com/80588/img/slack_api_logo_vogue.png"})
+              "icon_url": slack_bot_icon_url})
 
             r = requests.post( url = slack_endpoint, data = data, headers = headers )
 
@@ -415,7 +416,7 @@ def forward_form(form_token):
               "channel": slack_newsletter_channel_id,
               "text": "*" + submitter_email+ "* has subscribed for the newsletter.",
               "username": slack_bot_name,
-              "icon_url": "https://a.slack-edge.com/80588/img/slack_api_logo_vogue.png"})
+              "icon_url": slack_bot_icon_url})
 
             r = requests.post( url = slack_endpoint, data = data, headers = headers )
 
