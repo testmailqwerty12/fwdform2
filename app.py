@@ -47,15 +47,18 @@ default_sender = os.environ.get('DEFAULT_SENDER') or ('fwdform@%s' % mailgun_dom
 hapikey = os.environ.get('HUBSPOT_API_KEY')
 
 slack_auth_key = os.environ.get('SLACK_AUTH_KEY')
-slack_channed_id = os.environ.get('SLACK_CHANNEL_ID')
+slack_contact_channel_id = os.environ.get('SLACK_CONTACT_CHANNEL_ID')
+slack_newsletter_channel_id = os.environ.get('SLACK_NEWSLETTER_CHANNEL_ID')
 slack_bot_name = os.environ.get('SLACK_BOT_NAME')
 
 recaptcha_secret_key = os.environ.get('RECAPTCHA_SECRET_KEY')
 
+contact_form_id = os.environ.get('CONTACT_FORM_ID')
+newsletter_form_id = os.environ.get('NEWSLETTER_FORM_ID')
+
 ESCAPE_SEQUENCE_RE = re.compile(r"\\|%")
 UNESCAPE_SEQUENCE_RE = re.compile(r"\\(\\|%)")
 PARAM_RE = re.compile(r"(?<!\\)%((?:[^%]|\\%)*?(?:[^%\\]|\\%))%")
-
 
 def escape(text):
     return re.sub(ESCAPE_SEQUENCE_RE, lambda m: '\\' + m.group(0), text)
@@ -300,80 +303,117 @@ def forward_form(form_token):
         return ('email-blank', 404)
 
     if r.json()["success"] == True and not honeypot and submitter_email:
-        send_mail(
-            to_address=user.email,
-            from_address=default_sender,
-            subject=substitute_params(form.subject, request.form),
-            body=substitute_params(form.body, request.form),
-            reply_to_address=submitter_email,
-        )
+        if form_token == contact_form_id:
+            send_mail(
+                to_address=user.email,
+                from_address=default_sender,
+                subject=substitute_params(form.subject, request.form),
+                body=substitute_params(form.body, request.form),
+                reply_to_address=submitter_email,
+            )
 
-        submitter_name = request.form.get('name')
-        submitter_name_list = submitter_name.split()
-        submitter_first_name = submitter_name_list[0]
-        submitter_name_list.pop(0)
-        submitter_last_name = " ".join(submitter_name_list)
+            submitter_name = request.form.get('name')
+            submitter_name_list = submitter_name.split()
+            submitter_first_name = submitter_name_list[0]
+            submitter_name_list.pop(0)
+            submitter_last_name = " ".join(submitter_name_list)
 
-        submitter_phone = request.form.get('phone')
-        submitter_subject = request.form.get('subject')
-        submitter_body = request.form.get('body')
+            submitter_phone = request.form.get('phone')
+            submitter_subject = request.form.get('subject')
+            submitter_body = request.form.get('body')
 
-        # 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
-        # hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
-        hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
-        headers = {}
-        headers["Content-Type"]="application/json"
-        data = json.dumps({
-          "properties": [
-            {
-              "property": "email",
-              "value": submitter_email
-            },
-            {
-              "property": "firstname",
-              "value": submitter_first_name
-            },
-            {
-              "property": "lastname",
-              "value": submitter_first_name
-            },
-            {
-              "property": "phone",
-              "value": submitter_phone
-            },
-            {
-              "property": "subject",
-              "value": submitter_subject
-            },
-            {
-              "property": "message",
-              "value": submitter_body
-            }
-          ]
-        })
+            # 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
+            # hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
+            hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
+            headers = {}
+            headers["Content-Type"]="application/json"
+            data = json.dumps({
+              "properties": [
+                {
+                  "property": "email",
+                  "value": submitter_email
+                },
+                {
+                  "property": "firstname",
+                  "value": submitter_first_name
+                },
+                {
+                  "property": "lastname",
+                  "value": submitter_first_name
+                },
+                {
+                  "property": "phone",
+                  "value": submitter_phone
+                },
+                {
+                  "property": "subject",
+                  "value": submitter_subject
+                },
+                {
+                  "property": "message",
+                  "value": submitter_body
+                }
+              ]
+            })
 
 
-        r = requests.post( url = hubspot_endpoint, data = data, headers = headers )
+            r = requests.post( url = hubspot_endpoint, data = data, headers = headers )
 
-        print('================== HUBSPOT RESPONSE START ===================')
-        print(r.text)
-        print('================== HUBSPOT RESPONSE END =====================')
+            print('================== HUBSPOT RESPONSE START ===================')
+            print(r.text)
+            print('================== HUBSPOT RESPONSE END =====================')
 
-        slack_endpoint = 'https://slack.com/api/chat.postMessage'
-        headers = {}
-        headers["Content-Type"]="application/json"
-        headers["Authorization"]=slack_auth_key
-        data = json.dumps({
-          "channel": slack_channed_id,
-          "text": "*" + submitter_name + "* has submitted the contact form.\n\n*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n___________________________________________\n",
-          "username": slack_bot_name})
+            slack_endpoint = 'https://slack.com/api/chat.postMessage'
+            headers = {}
+            headers["Content-Type"]="application/json"
+            headers["Authorization"]=slack_auth_key
+            data = json.dumps({
+              "channel": slack_contact_channel_id,
+              "text": "*" + submitter_name + "* has submitted the contact form.\n\n*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n___________________________________________\n",
+              "username": slack_bot_name})
 
-        r = requests.post( url = slack_endpoint, data = data, headers = headers )
+            r = requests.post( url = slack_endpoint, data = data, headers = headers )
 
-        print('================== SLACK RESPONSE START ===================')
-        print(r.text)
-        print('================== SLACK RESPONSE END =====================')
+            print('================== SLACK RESPONSE START ===================')
+            print(r.text)
+            print('================== SLACK RESPONSE END =====================')
+        elif form_token == newsletter_form_id:
+            hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
+            headers = {}
+            headers["Content-Type"]="application/json"
+            data = json.dumps({
+              "properties": [
+                {
+                  "property": "email",
+                  "value": submitter_email
+                },
+                {
+                  "property": "newsletter",
+                  "value": "Yes"
+                }
+              ]
+            })
 
+            r = requests.post( url = hubspot_endpoint, data = data, headers = headers )
+
+            print('================== HUBSPOT RESPONSE START ===================')
+            print(r.text)
+            print('================== HUBSPOT RESPONSE END =====================')
+
+            slack_endpoint = 'https://slack.com/api/chat.postMessage'
+            headers = {}
+            headers["Content-Type"]="application/json"
+            headers["Authorization"]=slack_auth_key
+            data = json.dumps({
+              "channel": slack_newsletter_channel_id,
+              "text": "*" + submitter_email+ "* has subscribed for the newsletter.",
+              "username": slack_bot_name})
+
+            r = requests.post( url = slack_endpoint, data = data, headers = headers )
+
+            print('================== SLACK RESPONSE START ===================')
+            print(r.text)
+            print('================== SLACK RESPONSE END =====================')
         response_message = 'form-submitted'
     else:
         response_message = 'form-not-submitted'
