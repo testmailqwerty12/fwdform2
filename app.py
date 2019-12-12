@@ -391,7 +391,7 @@ def forward_form(form_token):
                 },
                 {
                   "property": "newsletter",
-                  "value": "Yes"
+                  "value": "true"
                 }
               ]
             })
