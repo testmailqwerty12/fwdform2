@@ -5,7 +5,7 @@ import requests
 import json
 import secrets
 import sys
-# import rollbar
+import rollbar
 from uuid import uuid4
 
 from flask import Flask, abort, jsonify, redirect, request
@@ -27,10 +27,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# rollbar_api_key = os.environ['ROLLBAR_API_KEY']
+rollbar_api_key = os.environ['ROLLBAR_API_KEY']
 
-# rollbar.init(rollbar_api_key)
-# rollbar.report_message('Rollbar is configured correctly')
+rollbar.init(rollbar_api_key)
+rollbar.report_message('Rollbar is configured correctly')
 
 if 'DYNO' in os.environ:
     app.logger.addHandler(logging.StreamHandler(sys.stdout))
