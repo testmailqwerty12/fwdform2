@@ -319,6 +319,17 @@ def forward_form(form_token):
             submitter_subject = request.form.get('subject')
             submitter_body = request.form.get('body')
 
+            if not submitter_name:
+                return ('name-blank', 404)
+
+            if not submitter_phone:
+                return ('phone-blank', 404)
+
+            if not submitter_subject:
+                return ('subject-blank', 404)
+
+            if not submitter_body:
+                return ('message-blank', 404)
 
             slack_endpoint = 'https://slack.com/api/chat.postMessage'
             headers = {}
