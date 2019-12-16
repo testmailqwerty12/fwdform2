@@ -348,11 +348,10 @@ def forward_form(form_token):
                 print(r.text)
                 print('================== SLACK RESPONSE END =====================')
             except:
-                print('slack-error')
+                print('############### slack-error ###############')
                 # rollbar.report_exc_info()
 
             try:
-                # 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
                 # hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
                 hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
                 headers = {}
@@ -393,7 +392,7 @@ def forward_form(form_token):
                 print(r.text)
                 print('================== HUBSPOT RESPONSE END =====================')
             except:
-                print('hubspot-error')
+                print('############### hubspot-error ###############')
                 # rollbar.report_exc_info()
 
             try:
@@ -407,10 +406,10 @@ def forward_form(form_token):
             except:
                 print('mailgun-error')
                 # rollbar.report_exc_info()
+
         elif form_token == newsletter_form_id:
 
             try:
-                b = a + 1
                 hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
                 headers = {}
                 headers["Content-Type"]="application/json"
@@ -433,7 +432,7 @@ def forward_form(form_token):
                 print(r.text)
                 print('================== HUBSPOT RESPONSE END =====================')
             except:
-                print('hubspot-error')
+                print('############### hubspot-error ###############')
                 # rollbar.report_exc_info()
 
             try:
@@ -453,7 +452,7 @@ def forward_form(form_token):
                 print(r.text)
                 print('================== SLACK RESPONSE END =====================')
             except:
-                print('slack-error')
+                print('############### slack-error ###############')
                 # rollbar.report_exc_info()
         response_message = 'form-submitted'
     else:
