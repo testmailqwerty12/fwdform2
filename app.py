@@ -115,7 +115,7 @@ def verify_recaptcha(g_recaptcha_response):
 
     return g_recaptcha_response and r.json()["success"] == True
 
-def hubspot_create_or_update_contact(data, submitter_email)
+def hubspot_create_or_update_contact(data, submitter_email):
     endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
     headers = {}
     headers["Content-Type"]="application/json"
@@ -125,7 +125,7 @@ def hubspot_create_or_update_contact(data, submitter_email)
     print(r.text)
     print('================== HUBSPOT RESPONSE END =====================')
 
-def slack_channel_post_message(channel_id, message)
+def slack_channel_post_message(channel_id, message):
     endpoint = 'https://slack.com/api/chat.postMessage'
     headers = {}
     headers["Content-Type"]="application/json"
