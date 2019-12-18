@@ -316,7 +316,7 @@ def forward_form(form_token):
     g_recaptcha_response = request.form.get('g-recaptcha-response')
     recaptcha_verified = verify_recaptcha(g_recaptcha_response)
 
-    if not recaptcha_verified
+    if not recaptcha_verified:
         return ('captcha-invalid', 404)
 
     if honeypot:
