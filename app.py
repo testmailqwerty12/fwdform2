@@ -144,7 +144,6 @@ def slack_channel_post_message(channel_id, pretext, message):
 
             }
         ]
-
       })
 
     r = requests.post( url = endpoint, data = data, headers = headers )
@@ -364,7 +363,7 @@ def forward_form(form_token):
 
             try:
                 pretext = "*" + submitter_name + "* has submitted the contact form."
-                message = "*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n\n"
+                message = "*Email:* " + submitter_email + "\n\n*Phone:* " + submitter_phone + "\n\n*Subject:* " + submitter_subject + "\n\n*Message:*\n" + submitter_body
                 slack_channel_post_message(slack_contact_channel_id, pretext, message)
             except:
                 print('############### slack-error ###############')
