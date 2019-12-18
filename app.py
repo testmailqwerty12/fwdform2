@@ -325,7 +325,7 @@ def forward_form(form_token):
     if not submitter_email:
         return ('email-blank', 404)
 
-    if r.json()["success"] == True and not honeypot and submitter_email:
+    if submitter_email:
 
         if form_token == contact_form_id:
 
