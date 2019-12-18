@@ -100,7 +100,7 @@ def request_wants_json():
     best = request.accept_mimetypes.best_match(['application/json', 'text/plain'])
     return best == 'application/json' and request.accept_mimetypes[best] > request.accept_mimetypes['text/plain']
 
-def verify_recaptcha(g_recaptcha_response)
+def verify_recaptcha(g_recaptcha_response):
     if g_recaptcha_response:
         recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify?secret=' + recaptcha_secret_key + '&response=' + g_recaptcha_response
         headers = {}
