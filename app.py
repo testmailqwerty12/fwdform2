@@ -266,10 +266,6 @@ def deregister_form(form_token):
 
 @app.route('/form/<form_token>', methods=['POST'])
 def forward_form(form_token):
-    try:
-        b = a + 1
-    except:
-        rollbar.report_exc_info()
     form = Form.query.filter_by(public_token=form_token).first()
     if not form:
         return ('form-not-found', 404)
@@ -349,7 +345,7 @@ def forward_form(form_token):
                 print('================== SLACK RESPONSE END =====================')
             except:
                 print('############### slack-error ###############')
-                # rollbar.report_exc_info()
+                rollbar.report_exc_info()
 
             try:
                 # hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
@@ -393,7 +389,7 @@ def forward_form(form_token):
                 print('================== HUBSPOT RESPONSE END =====================')
             except:
                 print('############### hubspot-error ###############')
-                # rollbar.report_exc_info()
+                rollbar.report_exc_info()
 
             try:
                 send_mail(
@@ -405,7 +401,7 @@ def forward_form(form_token):
                 )
             except:
                 print('mailgun-error')
-                # rollbar.report_exc_info()
+                rollbar.report_exc_info()
 
         elif form_token == newsletter_form_id:
 
@@ -433,7 +429,7 @@ def forward_form(form_token):
                 print('================== HUBSPOT RESPONSE END =====================')
             except:
                 print('############### hubspot-error ###############')
-                # rollbar.report_exc_info()
+                rollbar.report_exc_info()
 
             try:
                 slack_endpoint = 'https://slack.com/api/chat.postMessage'
@@ -453,7 +449,7 @@ def forward_form(form_token):
                 print('================== SLACK RESPONSE END =====================')
             except:
                 print('############### slack-error ###############')
-                # rollbar.report_exc_info()
+                rollbar.report_exc_info()
         response_message = 'form-submitted'
     else:
         response_message = 'form-not-submitted'
