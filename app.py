@@ -140,8 +140,8 @@ def slack_channel_post_message(channel_id, pretext, message):
                 "fallback": pretext + "\n\n" + message,
                 "color": "#3970C5",
                 "pretext": pretext,
-                "text": message
-
+                "text": message,
+                "mrkdwn_in": ["pretext", "text"]
             }
         ]
       })
