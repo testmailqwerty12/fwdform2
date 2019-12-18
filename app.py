@@ -51,6 +51,7 @@ slack_contact_channel_id = os.environ.get('SLACK_CONTACT_CHANNEL_ID')
 slack_newsletter_channel_id = os.environ.get('SLACK_NEWSLETTER_CHANNEL_ID')
 slack_bot_name = os.environ.get('SLACK_BOT_NAME')
 slack_bot_icon_url = os.environ.get('SLACK_BOT_ICON_URL')
+slack_attachment_color = os.environ.get('SLACK_ATTACHMENT_COLOR')
 
 recaptcha_secret_key = os.environ.get('RECAPTCHA_SECRET_KEY')
 
@@ -138,7 +139,7 @@ def slack_channel_post_message(channel_id, pretext, message):
       "attachments": [
             {
                 "fallback": pretext + "\n\n" + message,
-                "color": "#3970C5",
+                "color": slack_attachment_color,
                 "pretext": pretext,
                 "text": message,
                 "mrkdwn_in": ["pretext", "text"]
