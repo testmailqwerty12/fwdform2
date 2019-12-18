@@ -64,16 +64,13 @@ PARAM_RE = re.compile(r"(?<!\\)%((?:[^%]|\\%)*?(?:[^%\\]|\\%))%")
 def escape(text):
     return re.sub(ESCAPE_SEQUENCE_RE, lambda m: '\\' + m.group(0), text)
 
-
 def unescape(text):
     return re.sub(UNESCAPE_SEQUENCE_RE, lambda m: m.group(1), text)
-
 
 def substitute_params(template, params):
     if not template:
         return None
     return unescape(re.sub(PARAM_RE, lambda m: escape(params[unescape(m.group(1))]), template))
-
 
 def send_mail(to_address, from_address, subject, body, html_body=None, reply_to_address=None):
     message = {
@@ -96,14 +93,27 @@ def send_mail(to_address, from_address, subject, body, html_body=None, reply_to_
         app.logger.error('Received %(status)d error while sending email to %(email)s: %(error)s', {'status': result.status_code, 'email': to_address, 'error': result.text})
         abort(500)
 
-
 def falsey_to_none(value):
     return value if value else None
-
 
 def request_wants_json():
     best = request.accept_mimetypes.best_match(['application/json', 'text/plain'])
     return best == 'application/json' and request.accept_mimetypes[best] > request.accept_mimetypes['text/plain']
+
+def verify_recaptcha(g_recaptcha_response)
+    if g_recaptcha_response:
+        recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify?secret=' + recaptcha_secret_key + '&response=' + g_recaptcha_response
+        headers = {}
+        headers["Content-Type"]="application/x-www-form-urlencoded"
+        headers["Content-Length"]=548
+        data = json.dumps({})
+        r = requests.post( url = recaptcha_endpoint, data = data, headers = headers )
+
+        print('================== RECAPTCHA RESPONSE START ===================')
+        print(g_recaptcha_response)
+        print('================== RECAPTCHA RESPONSE END =====================')
+
+    return g_recaptcha_response and r.json()["success"] == True
 
 def hubspot_create_or_update_contact(data, submitter_email)
     endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
@@ -304,21 +314,9 @@ def forward_form(form_token):
     honeypot = request.form.get('_gotcha')
 
     g_recaptcha_response = request.form.get('g-recaptcha-response')
+    recaptcha_verified = verify_recaptcha(g_recaptcha_response)
 
-    if g_recaptcha_response:
-        recaptcha_endpoint = 'https://www.google.com/recaptcha/api/siteverify?secret=' + recaptcha_secret_key + '&response=' + g_recaptcha_response
-        headers = {}
-        headers["Content-Type"]="application/x-www-form-urlencoded"
-        headers["Content-Length"]=548
-        data = json.dumps({})
-        r = requests.post( url = recaptcha_endpoint, data = data, headers = headers )
-
-        print('================== RECAPTCHA RESPONSE START ===================')
-        print(g_recaptcha_response)
-        print('================== RECAPTCHA RESPONSE END =====================')
-
-
-    if not g_recaptcha_response or r.json()["success"] == False:
+    if not recaptcha_verified
         return ('captcha-invalid', 404)
 
     if honeypot:
