@@ -30,7 +30,7 @@ db = SQLAlchemy(app)
 rollbar_api_key = os.environ['ROLLBAR_API_KEY']
 
 rollbar.init(rollbar_api_key)
-rollbar.report_message('Rollbar is configured correctly')
+# rollbar.report_message('Rollbar is configured correctly')
 
 if 'DYNO' in os.environ:
     app.logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -138,7 +138,7 @@ def slack_channel_post_message(channel_id, pretext, message):
       "attachments": [
             {
                 "fallback": pretext + "\n\n" + message,
-                "color": "#36a64f",
+                "color": "#3970C5",
                 "pretext": pretext,
                 "text": message
 
