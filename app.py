@@ -125,16 +125,27 @@ def hubspot_create_or_update_contact(data, submitter_email):
     print(r.text)
     print('================== HUBSPOT RESPONSE END =====================')
 
-def slack_channel_post_message(channel_id, message):
+def slack_channel_post_message(channel_id, pretext, message):
     endpoint = 'https://slack.com/api/chat.postMessage'
     headers = {}
     headers["Content-Type"]="application/json"
     headers["Authorization"]=slack_auth_key
     data = json.dumps({
       "channel": channel_id,
-      "text": message,
+      # "text": message,
       "username": slack_bot_name,
-      "icon_url": slack_bot_icon_url})
+      "icon_url": slack_bot_icon_url,
+      "attachments": [
+            {
+                "fallback": pretext + "\n\n" + message,
+                "color": "#36a64f",
+                "pretext": pretext,
+                "text": message
+
+            }
+        ]
+
+      })
 
     r = requests.post( url = endpoint, data = data, headers = headers )
 
@@ -352,8 +363,9 @@ def forward_form(form_token):
                 return ('message-blank', 404)
 
             try:
-                message = "*" + submitter_name + "* has submitted the contact form.\n\n*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n\n"
-                slack_channel_post_message(slack_contact_channel_id, message)
+                pretext = "*" + submitter_name + "* has submitted the contact form."
+                message = "*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n\n"
+                slack_channel_post_message(slack_contact_channel_id, pretext, message)
             except:
                 print('############### slack-error ###############')
                 rollbar.report_exc_info()
@@ -427,8 +439,9 @@ def forward_form(form_token):
                 rollbar.report_exc_info()
 
             try:
+                pretext = ""
                 message = "*" + submitter_email + "* has subscribed for the newsletter."
-                slack_channel_post_message(slack_newsletter_channel_id, message)
+                slack_channel_post_message(slack_newsletter_channel_id, pretext, message)
             except:
                 print('############### slack-error ###############')
                 rollbar.report_exc_info()
