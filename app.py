@@ -105,6 +105,32 @@ def request_wants_json():
     best = request.accept_mimetypes.best_match(['application/json', 'text/plain'])
     return best == 'application/json' and request.accept_mimetypes[best] > request.accept_mimetypes['text/plain']
 
+def hubspot_create_or_update_contact(data, submitter_email)
+    endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
+    headers = {}
+    headers["Content-Type"]="application/json"
+    r = requests.post( url = endpoint, data = data, headers = headers )
+
+    print('================== HUBSPOT RESPONSE START ===================')
+    print(r.text)
+    print('================== HUBSPOT RESPONSE END =====================')
+
+def slack_channel_post_message(channel_id, message)
+    endpoint = 'https://slack.com/api/chat.postMessage'
+    headers = {}
+    headers["Content-Type"]="application/json"
+    headers["Authorization"]=slack_auth_key
+    data = json.dumps({
+      "channel": channel_id,
+      "text": message,
+      "username": slack_bot_name,
+      "icon_url": slack_bot_icon_url})
+
+    r = requests.post( url = endpoint, data = data, headers = headers )
+
+    print('================== SLACK RESPONSE START ===================')
+    print(r.text)
+    print('================== SLACK RESPONSE END =====================')
 
 class User(db.Model):
 
@@ -328,30 +354,13 @@ def forward_form(form_token):
                 return ('message-blank', 404)
 
             try:
-                slack_endpoint = 'https://slack.com/api/chat.postMessage'
-                headers = {}
-                headers["Content-Type"]="application/json"
-                headers["Authorization"]=slack_auth_key
-                data = json.dumps({
-                  "channel": slack_contact_channel_id,
-                  "text": "*" + submitter_name + "* has submitted the contact form.\n\n*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n___________________________________________\n",
-                  "username": slack_bot_name,
-                  "icon_url": slack_bot_icon_url})
-
-                r = requests.post( url = slack_endpoint, data = data, headers = headers )
-
-                print('================== SLACK RESPONSE START ===================')
-                print(r.text)
-                print('================== SLACK RESPONSE END =====================')
+                message = "*" + submitter_name + "* has submitted the contact form.\n\n*Email:* " + submitter_email + "\n*Phone:* " + submitter_phone + "\n*Subject:* " + submitter_subject + "\n*Message:*\n" + submitter_body + "\n\n"
+                slack_channel_post_message(slack_contact_channel_id, message)
             except:
                 print('############### slack-error ###############')
                 rollbar.report_exc_info()
 
             try:
-                # hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/?hapikey=' + hapikey
-                hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
-                headers = {}
-                headers["Content-Type"]="application/json"
                 data = json.dumps({
                   "properties": [
                     {
@@ -381,12 +390,7 @@ def forward_form(form_token):
                   ]
                 })
 
-
-                r = requests.post( url = hubspot_endpoint, data = data, headers = headers )
-
-                print('================== HUBSPOT RESPONSE START ===================')
-                print(r.text)
-                print('================== HUBSPOT RESPONSE END =====================')
+                hubspot_create_or_update_contact(data, submitter_email)
             except:
                 print('############### hubspot-error ###############')
                 rollbar.report_exc_info()
@@ -406,9 +410,6 @@ def forward_form(form_token):
         elif form_token == newsletter_form_id:
 
             try:
-                hubspot_endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
-                headers = {}
-                headers["Content-Type"]="application/json"
                 data = json.dumps({
                   "properties": [
                     {
@@ -422,31 +423,14 @@ def forward_form(form_token):
                   ]
                 })
 
-                r = requests.post( url = hubspot_endpoint, data = data, headers = headers )
-
-                print('================== HUBSPOT RESPONSE START ===================')
-                print(r.text)
-                print('================== HUBSPOT RESPONSE END =====================')
+                hubspot_create_or_update_contact(data, submitter_email)
             except:
                 print('############### hubspot-error ###############')
                 rollbar.report_exc_info()
 
             try:
-                slack_endpoint = 'https://slack.com/api/chat.postMessage'
-                headers = {}
-                headers["Content-Type"]="application/json"
-                headers["Authorization"]=slack_auth_key
-                data = json.dumps({
-                  "channel": slack_newsletter_channel_id,
-                  "text": "*" + submitter_email+ "* has subscribed for the newsletter.",
-                  "username": slack_bot_name,
-                  "icon_url": slack_bot_icon_url})
-
-                r = requests.post( url = slack_endpoint, data = data, headers = headers )
-
-                print('================== SLACK RESPONSE START ===================')
-                print(r.text)
-                print('================== SLACK RESPONSE END =====================')
+                message = "*" + submitter_email + "* has subscribed for the newsletter."
+                slack_channel_post_message(slack_newsletter_channel_id, message)
             except:
                 print('############### slack-error ###############')
                 rollbar.report_exc_info()
