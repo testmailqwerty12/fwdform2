@@ -13,11 +13,21 @@
     "postdeploy": "./setup.py"
   },
   "env": {
+    "CORS_ALLOWED_ORIGINS": {
+      "description": "Your allowed origins separated by commas. E.g: 'http://example.com,http://example1.com'.",
+      "required": true
+    },
+    "ROLLBAR_API_KEY": {
+      "description": "Your rollbar api key.",
+      "required": true
+    },
     "MAILGUN_DOMAIN": {
-      "description": "Your Mailgun registered domain."
+      "description": "Your Mailgun registered domain.",
+      "required": true
     },
     "MAILGUN_API_KEY": {
-      "description": "The API key for your Mailgun domain."
+      "description": "The API key for your Mailgun domain.",
+      "required": true
     },
     "REGISTRATION_ENABLED": {
       "description": "Whether user (email recipient) registration is enabled. (yes/no)",
