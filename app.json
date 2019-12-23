@@ -49,6 +49,42 @@
       "description": "'/etc/ssl/certs/ca-certificates.crt' ensures that the host's SSL certificate authorities are utilised rather than the (potentially dated) CAs packaged with Python",
       "required": true,
       "value": "/etc/ssl/certs/ca-certificates.crt"
+    },
+    "SLACK_AUTH_KEY": {
+      "description": "",
+      "required": false
+    },
+    "SLACK_CONTACT_CHANNEL_ID": {
+      "description": "",
+      "required": false
+    },
+    "SLACK_NEWSLETTER_CHANNEL_ID": {
+      "description": "",
+      "required": false
+    },
+    "SLACK_BOT_NAME": {
+      "description": "",
+      "required": false
+    },
+    "SLACK_BOT_ICON_URL": {
+      "description": "",
+      "required": false
+    },
+    "SLACK_ATTACHMENT_COLOR": {
+      "description": "",
+      "required": false
+    },
+    "RECAPTCHA_SECRET_KEY": {
+      "description": "",
+      "required": false
+    },
+    "CONTACT_FORM_ID": {
+      "description": "",
+      "required": false
+    },
+    "NEWSLETTER_FORM_ID": {
+      "description": "",
+      "required": false
     }
   },
   "addons": [
