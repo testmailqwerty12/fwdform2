@@ -134,6 +134,7 @@ def slack_channel_post_message(channel_id, pretext, message):
     data = json.dumps({
       "channel": channel_id,
       # "text": message,
+      "as_user": False,
       "username": slack_bot_name,
       "icon_url": slack_bot_icon_url,
       "attachments": [
