@@ -113,8 +113,10 @@ def verify_recaptcha(g_recaptcha_response):
         print('================== RECAPTCHA RESPONSE START ===================')
         print(g_recaptcha_response)
         print('================== RECAPTCHA RESPONSE END =====================')
+        return r.json()["success"] == True
+    else
+        return False
 
-    return g_recaptcha_response and r.json()["success"] == True
 
 def hubspot_create_or_update_contact(data, submitter_email):
     endpoint = 'https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/' + submitter_email + '?hapikey=' + hapikey
