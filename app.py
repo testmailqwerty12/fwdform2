@@ -114,7 +114,7 @@ def verify_recaptcha(g_recaptcha_response):
         print(g_recaptcha_response)
         print('================== RECAPTCHA RESPONSE END =====================')
         return r.json()["success"] == True
-    else
+    else:
         return False
 
 
